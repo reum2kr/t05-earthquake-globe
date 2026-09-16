@@ -2,6 +2,7 @@ import {
   resetEvaluationState, applySuccessfulReading, applyError, runFixture,
   comparisonFor, kstDate
 } from './engine.js';
+import { initGlobe, setMarker } from './globe.js';
 
 const SIGNAL_ID = 'usgs-max-mag-24h';
 const SOURCE_NAME = 'USGS Earthquake Hazards Program';
@@ -73,6 +74,12 @@ async function fetchLiveNow() {
 
     // ---- 표시 전용 부가정보 (저장 데이터 9개 필드와 무관, daily-readings.json에는 영향 없음) ----
     renderExtraInfo(features);
+
+    // ---- 3D 지구본 마커 갱신 (T05-T02, 표시 전용) ----
+    const coords = top.geometry?.coordinates; // GeoJSON: [lon, lat, depth]
+    if (Array.isArray(coords) && coords.length >= 2) {
+      setMarker(coords[1], coords[0]);
+    }
 
     const fetchedAt = new Date().toISOString();
     const reading = {
@@ -203,6 +210,15 @@ function wireDemoButtons() {
 
 // ---------- init ----------
 window.addEventListener('DOMContentLoaded', () => {
+  const globeContainer = $('globe-container');
+  if (globeContainer) {
+    initGlobe(globeContainer, () => {
+      // 텍스처 로드 실패 시(T05-T08): 캔버스는 숨기고 대체 안내만 표시. 다른 값은 그대로 유지됨.
+      globeContainer.style.display = 'none';
+      const fb = $('globe-fallback');
+      if (fb) fb.style.display = 'block';
+    });
+  }
   fetchLiveNow();
   loadDailyHistory();
   wireDemoButtons();

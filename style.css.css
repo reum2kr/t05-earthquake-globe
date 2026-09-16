@@ -17,6 +17,8 @@ table.meta { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 table.meta th { text-align: left; color: var(--muted); font-weight: 500; padding: 4px 8px 4px 0; width: 140px; vertical-align: top; }
 table.meta td { padding: 4px 0; }
 .sub-heading { font-size: 0.95rem; margin: 16px 0 6px; color: var(--ink); }
+#globe-container { width: 100%; max-width: 320px; aspect-ratio: 1 / 1; margin: 8px auto; border-radius: 50%; overflow: hidden; background: #0a1128; touch-action: none; }
+#globe-container canvas { display: block; width: 100% !important; height: 100% !important; }
 table.history { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 6px; }
 table.history th, table.history td { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; background: #eee; }
