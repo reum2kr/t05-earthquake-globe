@@ -1,8 +1,8 @@
 // globe.js — T05: 진앙 좌표를 인터랙티브 3D 지구본으로 표시
 // Three.js (ESM, jsdelivr CDN) 사용. 실제 배포 웹사이트라 artifact CSP 제약 없이 임의 CDN 사용 가능.
 
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js/+esm';
-import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js/+esm';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const EARTH_TEXTURE_URL = 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg';
 const GLOBE_RADIUS = 5;
