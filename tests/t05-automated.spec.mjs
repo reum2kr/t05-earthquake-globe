@@ -98,7 +98,10 @@ async function withMockedLiveFetch(page) {
 
 async function main() {
   const server = await startServer();
-  const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM || '/opt/pw-browsers/chromium' });
+  // PW_CHROMIUM 환경변수가 지정되어 있으면 그 경로를 쓰고, 없으면
+  // `npx playwright install chromium`으로 설치된 Playwright 기본 브라우저를 사용한다.
+  const launchOptions = process.env.PW_CHROMIUM ? { executablePath: process.env.PW_CHROMIUM } : {};
+  const browser = await chromium.launch(launchOptions);
 
   try {
     // ===================== T05-T01, T05-T02, T05-T03 =====================
