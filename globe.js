@@ -1,10 +1,12 @@
 // globe.js — T05: 진앙 좌표를 인터랙티브 3D 지구본으로 표시
-// Three.js (ESM, jsdelivr CDN) 사용. 실제 배포 웹사이트라 artifact CSP 제약 없이 임의 CDN 사용 가능.
+// Three.js(ESM)는 CDN에서 로드하지만, 지구본 텍스처 이미지는 외부 CDN 의존을 없애기 위해
+// 저장소에 직접 포함된 자체 호스팅 이미지(./assets/earth-texture.jpg)를 사용한다.
+// (남은 문제 보완: 텍스처 서버 장애가 곧 T05-T08 폴백을 상시 유발하던 구조를 제거)
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const EARTH_TEXTURE_URL = 'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg';
+const EARTH_TEXTURE_URL = './assets/earth-texture.jpg';
 const GLOBE_RADIUS = 5;
 const MIN_DISTANCE = 7;   // 확대 한계 (T05-T06)
 const MAX_DISTANCE = 20;  // 축소 한계 (T05-T07)
@@ -61,6 +63,8 @@ export function initGlobe(containerEl, onError) {
   controls.maxDistance = MAX_DISTANCE; // T05-T07
   controls.enablePan = false;
   controls.rotateSpeed = 0.6;
+  // 모바일 터치 입력: 한 손가락 드래그=회전, 두 손가락 오므리기/벌리기=확대/축소 (OrbitControls 기본 동작)
+  controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.9));
   const sun = new THREE.DirectionalLight(0xffffff, 0.6);
@@ -87,6 +91,21 @@ export function initGlobe(containerEl, onError) {
 
   window.addEventListener('resize', onResize);
   animate();
+
+  // 자동화 테스트 전용 훅 — 프로덕션 동작에는 영향 없음, 내부 상태 읽기 전용 노출
+  // (tests/t05-automated.spec.mjs가 카메라 거리/마커 좌표/컨트롤 한계값을 검증하는 데 사용)
+  if (typeof window !== 'undefined') {
+    window.__T05_DEBUG__ = {
+      getState: () => ({
+        cameraDistance: camera.position.distanceTo(controls.target),
+        minDistance: controls.minDistance,
+        maxDistance: controls.maxDistance,
+        markerVisible: markerMesh ? markerMesh.visible : false,
+        markerPosition: markerMesh ? markerMesh.position.toArray() : null,
+        azimuthalAngle: controls.getAzimuthalAngle(),
+      }),
+    };
+  }
 }
 
 function addMarkerPlaceholder() {
